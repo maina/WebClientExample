@@ -1,13 +1,13 @@
-package com.honeacademy.fieldconverter;
+package com.honeacademy.webclientexample;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "com.honeacademy.fieldconverter")
-public class FieldconverterApplication {
+public class WebClientExampleApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FieldconverterApplication.class, args);
+		SpringApplication.run(WebClientExampleApplication.class, args);
 	}
 
 }

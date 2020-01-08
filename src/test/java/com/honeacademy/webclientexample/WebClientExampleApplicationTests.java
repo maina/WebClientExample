@@ -1,10 +1,10 @@
-package com.honeacademy.fieldconverter;
+package com.honeacademy.webclientexample;
 
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FieldconverterApplicationTests {
+public class WebClientExampleApplicationTests {
 
 	@Test
 	void contextLoads() {
