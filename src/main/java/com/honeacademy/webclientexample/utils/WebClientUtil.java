@@ -10,17 +10,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
 
 import reactor.core.publisher.Mono;
 /**
  * Class with helper CRUD utility methods for making requests using webclient
+ * To keep it simple use retrieve() method to get the response body
+ * To have more control over the response use exchange() method has access to all headers and body
  * @author james
  *
  */
 public class WebClientUtil {
-
+/**
+ * Fetch a list of items and map them to a List<T>
+ * @param <T>
+ * @param webClient
+ * @param bearerToken
+ * @param parameterizedTypeReference
+ * @param uriBuilderFunction - URIBuilder to construct the request URI
+ * @return
+ */
 	public static <T> Mono<List<T>> fetchList(
 		      final WebClient webClient,
 		      final String bearerToken,
@@ -35,10 +45,19 @@ public class WebClientUtil {
 		            HttpStatus::isError,
 		            clientResponse ->
 		                clientResponse
-		                    .bodyToMono(WebClientException.class)
+		                    .bodyToMono(WebClientResponseException.class)
 		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
 		        .bodyToMono(parameterizedTypeReference);
 		  }
+	/**
+	 * Fetch single object from the remote API and return a Java model
+	 * @param <T>
+	 * @param webClient
+	 * @param bearerToken
+	 * @param uriBuilderFunction
+	 * @param modelImplementation
+	 * @return
+	 */
 	public static <T> Mono<T> fetchSingleObject(
 		      final WebClient webClient,
 		      final String bearerToken,
@@ -53,10 +72,20 @@ public class WebClientUtil {
 		            HttpStatus::isError,
 		            clientResponse ->
 		                clientResponse
-		                    .bodyToMono(WebClientException.class)
+		                    .bodyToMono(WebClientResponseException.class)
 		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
 		        .bodyToMono(modelImplementation);
 		  }
+	/**
+	 * Update object  using put method
+	 * @param <T>
+	 * @param webClient
+	 * @param bearerToken
+	 * @param uriBuilderFunction
+	 * @param request
+	 * @param modelImplementation
+	 * @return
+	 */
 	public static <T> Mono<T> update(
 		      final WebClient webClient,
 		      final String bearerToken,
@@ -73,11 +102,21 @@ public class WebClientUtil {
 		            HttpStatus::isError,
 		            clientResponse ->
 		                clientResponse
-		                    .bodyToMono(WebClientException.class)
+		                    .bodyToMono(WebClientResponseException.class)
 		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
 		        .bodyToMono(modelImplementation);
 		  }
-	
+	/**
+	 * Create object using post 
+	 * @param <T>
+	 * @param <U>
+	 * @param webClient
+	 * @param bearerToken
+	 * @param uriBuilderFunction
+	 * @param request
+	 * @param responseModelClass
+	 * @return
+	 */
 	  public static <T, U> Mono<T> add(
 		      final WebClient webClient,
 		      final String bearerToken,
@@ -94,11 +133,21 @@ public class WebClientUtil {
 		            HttpStatus::isError,
 		            clientResponse ->
 		                clientResponse
-		                    .bodyToMono(WebClientException.class)
+		                    .bodyToMono(WebClientResponseException.class)
 		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
 		        .bodyToMono(responseModelClass);
 		  }
-	  
+	  /**
+	   * Call remote API with a request body and a List<T> response
+	   * @param <T>
+	   * @param <U>
+	   * @param webClient
+	   * @param bearerToken
+	   * @param uriBuilderFunction
+	   * @param request
+	   * @param parameterizedTypeReference
+	   * @return
+	   */
 	  public static <T, U> Mono<List<T>> create(
 		      final WebClient webClient,
 		      final String bearerToken,
@@ -115,11 +164,15 @@ public class WebClientUtil {
 		            HttpStatus::isError,
 		            clientResponse ->
 		                clientResponse
-		                    .bodyToMono(WebClientException.class)
+		                    .bodyToMono(WebClientResponseException.class)
 		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
 		        .bodyToMono(parameterizedTypeReference);
 		  }
-	  
+	  /**
+	   * Create WebClient using WebClient builder
+	   * @param baseUrl 
+	   * @return
+	   */
 	  public static WebClient getWebClient(String baseUrl) {
 		  WebClient webClient = WebClient.builder()
 			        .baseUrl(baseUrl)

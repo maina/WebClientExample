@@ -20,27 +20,27 @@ import com.honeacademy.webclientexample.utils.WebClientUtil;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/posts")
 public class PostController {
 
 	@Value("${webclientexample.postsapi.host}")
 	String baseUrl;
 
-	@PostMapping
+	@PostMapping("")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Mono<Post> createPost(@RequestBody final Post request) {
 		return WebClientUtil.add(WebClientUtil.getWebClient(baseUrl), "", builder -> builder.path("/posts").build(),
 				request, Post.class);
 	}
 
-	@PutMapping
+	@PutMapping("/{id}")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public Mono<Post> updatePost(@RequestBody final Post request) {
-		return WebClientUtil.add(WebClientUtil.getWebClient(baseUrl), "",
-				builder -> builder.path("/posts/" + request.getId()).build(), request, Post.class);
+	public Mono<Post> updatePost(@RequestBody final Post request,@PathVariable Long id) {
+		return WebClientUtil.update(WebClientUtil.getWebClient(baseUrl), "",
+				builder -> builder.path("/posts/"+id).build(), request, Post.class);
 	}
 
-	@GetMapping
+	@GetMapping("")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Mono<List<Post>> listPosts() {
 		ParameterizedTypeReference<List<Post>> parameterizedTypeReference =
