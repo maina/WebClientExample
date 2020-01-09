@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -80,12 +81,12 @@ public class WebClientUtil {
 	  public static <T, U> Mono<T> add(
 		      final WebClient webClient,
 		      final String bearerToken,
-		      final String path,
+		      final Function<UriBuilder, URI> uriBuilderFunction,
 		      final U request,
 		      final Class<T> responseModelClass) {
 		    return webClient
 		        .post()
-		        .uri(path)
+		        .uri(uriBuilder -> uriBuilderFunction.apply(uriBuilder))
 		        .body(BodyInserters.fromObject(request))
 		        .header(HttpHeaders.AUTHORIZATION, bearerToken)
 		        .retrieve()
@@ -101,12 +102,12 @@ public class WebClientUtil {
 	  public static <T, U> Mono<List<T>> create(
 		      final WebClient webClient,
 		      final String bearerToken,
-		      final String path,
+		      final Function<UriBuilder, URI> uriBuilderFunction,
 		      final U request,
 		      final ParameterizedTypeReference<List<T>> parameterizedTypeReference) {
 		    return webClient
 		        .post()
-		        .uri(path)
+		        .uri(uriBuilder -> uriBuilderFunction.apply(uriBuilder))
 		        .body(BodyInserters.fromObject(request))
 		        .header(HttpHeaders.AUTHORIZATION, bearerToken)
 		        .retrieve()
@@ -118,5 +119,15 @@ public class WebClientUtil {
 		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
 		        .bodyToMono(parameterizedTypeReference);
 		  }
+	  
+	  public static WebClient getWebClient(String baseUrl) {
+		  WebClient webClient = WebClient.builder()
+			        .baseUrl(baseUrl)
+			        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+			        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+			        .build();
+		return webClient;
+		  
+	  }
 
 }
