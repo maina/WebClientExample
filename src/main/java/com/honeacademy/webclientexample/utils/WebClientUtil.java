@@ -169,6 +169,33 @@ public class WebClientUtil {
 		        .bodyToMono(parameterizedTypeReference);
 		  }
 	  /**
+	   * Delete method
+	   * @param <T>
+	   * @param webClient
+	   * @param bearerToken
+	   * @param uriBuilderFunction
+	   * @param modelImplementation
+	   * @return
+	   */
+	  public static <T> Mono<T> delete(
+		      final WebClient webClient,
+		      final String bearerToken,
+		      final Function<UriBuilder, URI> uriBuilderFunction,
+		      final Class<T> modelImplementation) {
+		    return webClient
+		        .delete()
+		        .uri(uriBuilder -> uriBuilderFunction.apply(uriBuilder))
+		        .header(HttpHeaders.AUTHORIZATION, bearerToken)
+		        .retrieve()
+		        .onStatus(
+		            HttpStatus::isError,
+		            clientResponse ->
+		                clientResponse
+		                    .bodyToMono(WebClientResponseException.class)
+		                    .flatMap(bodyValue -> Mono.error(bodyValue)))
+		        .bodyToMono(modelImplementation);
+		  }
+	  /**
 	   * Create WebClient using WebClient builder
 	   * @param baseUrl 
 	   * @return

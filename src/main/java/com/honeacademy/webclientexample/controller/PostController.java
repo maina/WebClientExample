@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,13 @@ public class PostController {
 	public Mono<Post> updatePost(@RequestBody final Post request,@PathVariable Long id) {
 		return WebClientUtil.update(WebClientUtil.getWebClient(baseUrl), "",
 				builder -> builder.path("/posts/"+id).build(), request, Post.class);
+	}
+	
+	@DeleteMapping("/{id}")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	public Mono<Post> deletePost(@RequestBody final Post request,@PathVariable Long id) {
+		return WebClientUtil.delete(WebClientUtil.getWebClient(baseUrl), "",
+				builder -> builder.path("/posts/"+id).build(), Post.class);
 	}
 
 	@GetMapping("")
